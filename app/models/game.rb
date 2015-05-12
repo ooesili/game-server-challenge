@@ -1,6 +1,7 @@
 class Game < ActiveRecord::Base
   validates :board, presence: true
   after_initialize :set_board, if: :new_record?
+  has_many :players, dependent: :destroy
 
   private
 
