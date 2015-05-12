@@ -1,6 +1,6 @@
 class Game < ActiveRecord::Base
   validates :board, presence: true
-  after_initialize :set_board
+  after_initialize :set_board, if: :new_record?
 
   private
 
