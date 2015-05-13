@@ -2,7 +2,7 @@ class GameController < ApplicationController
 
   def create
     # create game and player
-    game = Game.new
+    game = Game.build
     player = game.players.new(nick: params[:nick])
     game.creator = player
     game.save

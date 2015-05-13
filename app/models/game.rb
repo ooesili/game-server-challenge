@@ -1,21 +1,23 @@
 class Game < ActiveRecord::Base
   validates :board, :uuid, presence: true
-  after_initialize :set_defaults, if: :new_record?
   belongs_to :creator, class: Player, foreign_key: 'creator_id'
   before_destroy :remove_creator
   has_many :players, dependent: :destroy
   enum status: ['Waiting', 'In Play', 'Completed']
+  serialize :board, GameBoard
 
   def current_player
     self.players.order(:id)[self.turn]
   end
 
-  private
-
-  def set_defaults
-    self.board = NewGameHelper.new_game(15, 10)
-    self.uuid = SecureRandom.uuid
+  def self.build(size = 15, num_words = 10)
+    game = new
+    game.board.fill_board(size, num_words)
+    game.uuid = SecureRandom.uuid
+    game
   end
+
+  private
 
   def remove_creator
     self.creator_id = nil
