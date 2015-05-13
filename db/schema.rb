@@ -11,16 +11,18 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150512063635) do
+ActiveRecord::Schema.define(version: 20150512142333) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "games", force: :cascade do |t|
     t.json     "board"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
     t.string   "uuid"
+    t.boolean  "started",    default: false, null: false
+    t.integer  "creator_id"
   end
 
   create_table "players", force: :cascade do |t|
@@ -32,5 +34,6 @@ ActiveRecord::Schema.define(version: 20150512063635) do
 
   add_index "players", ["game_id"], name: "index_players_on_game_id", using: :btree
 
+  add_foreign_key "games", "players", column: "creator_id"
   add_foreign_key "players", "games"
 end
