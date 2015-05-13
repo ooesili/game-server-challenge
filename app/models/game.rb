@@ -4,6 +4,7 @@ class Game < ActiveRecord::Base
   belongs_to :creator, class: Player, foreign_key: 'creator_id'
   before_destroy :remove_creator
   has_many :players, dependent: :destroy
+  enum status: ['Waiting', 'In Play', 'Completed']
 
   def current_player
     self.players.order(:id)[self.turn]
