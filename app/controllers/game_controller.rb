@@ -17,22 +17,22 @@ class GameController < ApplicationController
   def join
     # try to find game
     game = Game.find_by(uuid: params[:game_id])
-    if game
-      # game found
-      player = game.players.create(nick: params[:nick])
-      render json: {
-        registered: true,
-        player_id: player.uuid,
-        nick: player.nick,
-      }
-    else
-      # game not found
+    if not game or game.started
+      # game not found or already started
       render status: :not_found, json: {
         registered: false,
         player_id: nil,
         nick: nil,
       }
+      return
     end
+    # game found
+    player = game.players.create(nick: params[:nick])
+    render json: {
+      registered: true,
+      player_id: player.uuid,
+      nick: player.nick,
+    }
   end
 
   def start
