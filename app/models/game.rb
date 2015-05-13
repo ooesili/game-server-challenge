@@ -5,6 +5,10 @@ class Game < ActiveRecord::Base
   before_destroy :remove_creator
   has_many :players, dependent: :destroy
 
+  def current_player
+    self.players.order(:id)[self.turn]
+  end
+
   private
 
   def set_defaults

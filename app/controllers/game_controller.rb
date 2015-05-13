@@ -77,7 +77,7 @@ class GameController < ApplicationController
       return
     end
     # success
-    game.update(started: true)
+    game.update!(started: true)
     render json: {
       success: true,
       message: 'all good',
