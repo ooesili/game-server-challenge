@@ -85,4 +85,33 @@ class GameController < ApplicationController
     }
   end
 
+  def info
+    # find game
+    game = Game.find_by(uuid: params[:game_id])
+    if not game
+      render status: :not_found, json: {
+        message: 'game not found'
+      }
+      return
+    end
+    # find player
+    player = game.players.find_by(uuid: params[:player_id])
+    if not player
+      render status: :not_found, json: {
+        message: 'player not found'
+      }
+      return
+    end
+    # render information
+    players = game.players
+    render json: {
+      game_status: game.status,
+      current_player: game.current_player.nick,
+      turn_seq: players.pluck(:nick).rotate(game.turn),
+      words_done: game.words_done,
+      scores: players.pluck(:nick, :score).to_h,
+      grid: game.board,
+    }
+  end
+
 end
