@@ -59,4 +59,7 @@ RSpec.configure do |config|
       example.run
     end
   end
+
+  # setup factory girl
+  config.include FactoryGirl::Syntax::Methods
 end

@@ -42,6 +42,7 @@ group :development, :test do
   gem 'rspec-rails', '~> 3.2.1'
   gem 'spring-commands-rspec'
   gem 'database_cleaner', '~> 1.4.1'
+  gem 'factory_girl_rails', '~> 4.5.0'
 
   # Access an IRB console on exception pages or by using <%= console %> in views
   gem 'web-console', '~> 2.0'
