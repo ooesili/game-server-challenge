@@ -75,6 +75,11 @@ class GameBoard
     new(board)
   end
 
+  # other methods shouldn't care where the words came from
+  ALL_WORDS = File.open '/usr/share/dict/words' do |f|
+    f.each_line.map {|word| word.chomp.upcase}
+  end
+
   private
 
   # coordinate translators
@@ -138,7 +143,7 @@ class GameBoard
 
   def random_words(max_size)
     # only include normal words that are short enough
-    words = all_words.select do |line|
+    words = ALL_WORDS.select do |line|
       /^[a-zA-Z]+$/ =~ line and line.length <= max_size
     end
     words.shuffle!
@@ -147,13 +152,6 @@ class GameBoard
   # create a new empty game board
   def empty_game
     Array.new(@game_size) {Array.new(@game_size, nil)}
-  end
-
-  # other methods shouldn't care where the words came from
-  def all_words
-    File.open '/usr/share/dict/words' do |f|
-      f.each_line.map {|word| word.chomp.upcase}
-    end
   end
 
 end
