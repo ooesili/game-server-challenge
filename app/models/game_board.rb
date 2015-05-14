@@ -1,5 +1,5 @@
 class GameBoard
-  attr_accessor :board
+  attr_accessor :board, :inserted_words
 
   def initialize(board = nil)
     @board = board
@@ -20,13 +20,13 @@ class GameBoard
       # unlikely with the default game size and word count
       loop do
         # count the number of insertions so that we know when we're done
-        num_insertions = 0
+        @inserted_words = []
         random_words(@game_size).each do |word|
           # try to insert the word
           if insert_word(word)
-            num_insertions += 1
+            @inserted_words << word
             # stop if we've inserted all the words we needed to
-            throw :done if num_insertions > num_words
+            throw :done if @inserted_words.size > num_words
           end
         end
         # create another empty game and start over if we didn't finish
