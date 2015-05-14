@@ -3,4 +3,5 @@ Rails.application.routes.draw do
   get '/join' => 'game#join'
   get '/start' => 'game#start'
   get '/info' => 'game#info'
+  get '/play' => 'game#play'
 end

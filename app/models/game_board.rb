@@ -2,11 +2,15 @@ class GameBoard
 
   def initialize(board = nil)
     @board = board
+    # set game_size if we were given a board
+    @game_size = board.size if board
   end
 
-  def fill_board(size, num_words)
+  def fill_board(game_size, num_words)
+    # overwrite game size
+    @game_size = game_size
     # create an empty game
-    @board = empty_game(size)
+    @board = empty_game
     # keep going though random permutations of all of the words until a valid
     # game is created
     catch :done do
@@ -16,22 +20,47 @@ class GameBoard
       loop do
         # count the number of insertions so that we know when we're done
         num_insertions = 0
-        random_words(size).each do |word|
+        random_words(@game_size).each do |word|
           # try to insert the word
-          if insert_word(size, word)
+          if insert_word(word)
             num_insertions += 1
             # stop if we've inserted all the words we needed to
             throw :done if num_insertions > num_words
           end
         end
         # create another empty game and start over if we didn't finish
-        @board = empty_game(size)
+        @board = empty_game
       end
     end
     # replace nils with random characters
     @board.map! do |row|
       row.map! do |char|
         char or (65 + rand(26)).chr
+      end
+    end
+  end
+
+  def find_word(word)
+    # calculate the word size once
+    word_size = word.size
+    # try the word in reverse too
+    [word, word.reverse].any? do |this_word|
+      # the game board is all uppercase
+      this_word.upcase!
+      # try every direction
+      4.times.any? do |direction|
+        # get coordinate ranges to iterate over
+        yrange, xrange, accessor = get_coords_range(word_size, direction)
+        # iterate over each starting point
+        yrange.any? do |ystart|
+          xrange.any? do |xstart|
+            # try to find the word
+            this_word.each_char.with_index.all? do |char, i|
+              y, x = self.send(accessor, ystart, xstart, i)
+              @board[y][x] == char
+            end
+          end
+        end
       end
     end
   end
@@ -61,38 +90,44 @@ class GameBoard
     [y+delta, x+delta]
   end
 
-  def insert_word(game_size, word)
-    # get a random direction
-    word = word.reverse if rand(2) == 1
-    word_size = word.size
-    # set up starting position and direction
-    case rand(4)
+  def get_coords_range(word_size, direction)
+    case direction
     when 0
-      starty = rand(0...game_size)
-      startx = rand(0..game_size - word_size)
+      yrange = 0...@game_size
+      xrange = 0..@game_size - word_size
       accessor = :over_access
     when 1
-      starty = rand(0..game_size - word_size)
-      startx = rand(0...game_size)
+      yrange = 0..@game_size - word_size
+      xrange = 0...@game_size
       accessor = :down_access
     when 2
-      starty = rand(word_size..game_size) - 1
-      startx = rand(0..game_size - word_size)
+      yrange = (word_size - 1)..(@game_size - 1)
+      xrange = 0..@game_size - word_size
       accessor = :up_over_access
     when 3
-      starty = rand(0..game_size - word_size)
-      startx = rand(0..game_size - word_size)
+      yrange = 0..@game_size - word_size
+      xrange = 0..@game_size - word_size
       accessor = :down_over_access
     end
+    [yrange, xrange, accessor]
+  end
+
+  def insert_word(word)
+    # get a random direction
+    word = word.reverse if rand(2) == 1
+    # set up starting position and direction
+    yrange, xrange, accessor = get_coords_range(word.size, rand(4))
+    ystart = rand(yrange)
+    xstart = rand(xrange)
     # see if we can insert the word without changing anything
     ok_to_insert = word.each_char.with_index.all? do |char, i|
-      y, x = self.send(accessor, starty, startx, i)
+      y, x = self.send(accessor, ystart, xstart, i)
       [char,nil].include? @board[y][x]
     end
     # add the word if it's ok
     if ok_to_insert
       word.each_char.with_index.each do |char, i|
-        y, x = self.send(accessor, starty, startx, i)
+        y, x = self.send(accessor, ystart, xstart, i)
         @board[y][x] = char
       end
     end
@@ -109,8 +144,8 @@ class GameBoard
   end
 
   # create a new empty game board
-  def empty_game(size)
-    Array.new(size) {Array.new(size, nil)}
+  def empty_game
+    Array.new(@game_size) {Array.new(@game_size, nil)}
   end
 
   # other methods shouldn't care where the words came from
