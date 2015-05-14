@@ -4,12 +4,12 @@ fake_board = [
   'ZURQIXJCDTTSOSG',
   'UNYQMTETAILOFIB',
   'GFENTYSOTCQRSSO',
-  'RRXODNIUUODHIUB',
-  'EUMIOOOANCEESOI',
-  'WCPTMMPBNRISONA',
+  'RRXOONIUUODHIUB',
+  'EUMIOSOANCEESOI',
+  'WCPTMMMBNRISONA',
   'OTEAKRRICHFINOY',
-  'RUGZXAEYZXOSITB',
-  'GOSIMHVCAPROPOM',
+  'RUGZXAEYRXOSITB',
+  'GOSIMHVCACROPOM',
   'EUMHXEOSRVMTYMB',
   'LSYCHRWNSDIIHOU',
   'PVZEAPDQHDTMJHD',
@@ -133,6 +133,75 @@ RSpec.describe GameController, type: :controller do
       end
       it 'cannot join a "Completed" game' do
         @game = create(:game, status: 'Completed')
+      end
+    end
+  end
+
+  describe '#play' do
+    context 'with a valid word' do
+      before(:all) do
+        @word = 'crimson'
+      end
+      before(:each) do
+        # start on the last turn so that we can test the wrap around, as this
+        # is the place where things might get go wrong
+        players_count = rand(2..10)
+        @game = create :game,
+          players_count: players_count,
+          turn: players_count - 1
+        @player = @game.current_player
+        get :play, {word: @word, game_id: @game.uuid, player_id: @player.uuid}
+        @data = JSON.parse(response.body)
+      end
+      it 'indicates success' do
+        expect(@data['success']).to be(true)
+      end
+      it 'reports the correct score' do
+        expect(@data['score']).to be(@word.size)
+      end
+      it 'updates the players score' do
+        @player.reload
+        expect(@player.score).to eq(@data['score'])
+      end
+      it 'moves to the next player\'s turn' do
+        @game.reload
+        # as mentioned above, the game was initialized with the turn set to the
+        # last player, so we should be on the the first player (AKA the
+        # creator) now
+        expect(@game.current_player.id).to eq(@game.creator.id)
+      end
+      it 'marks the word as found' do
+        @game.reload
+        expect(@game.words_done).to include(@word)
+      end
+    end
+    context 'with an invalid word' do
+      before(:all) do
+        @word = 'sanguine'
+      end
+      before(:each) do
+        @game = create :game, players_count: 2
+        @player = @game.current_player
+        get :play, {word: @word, game_id: @game.uuid, player_id: @player.uuid}
+        @data = JSON.parse(response.body)
+      end
+      it 'indicates failure' do
+        expect(@data['success']).to be(false)
+      end
+      it 'reports 0 for the score' do
+        expect(@data['score']).to be(0)
+      end
+      it 'does not update the players score' do
+        @player.reload
+        expect(@player.score).to eq(0)
+      end
+      it 'does not move to the next player\'s turn' do
+        @game.reload
+        expect(@game.current_player.id).to eq(@player.id)
+      end
+      it 'does not marks the word as found' do
+        @game.reload
+        expect(@game.words_done).not_to include(@word)
       end
     end
   end
