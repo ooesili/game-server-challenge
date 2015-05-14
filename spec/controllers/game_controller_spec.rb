@@ -206,4 +206,66 @@ RSpec.describe GameController, type: :controller do
     end
   end
 
+  describe '#info' do
+    before(:all) do
+      @nicks = ['alice', 'bob', 'carol']
+    end
+    before(:each) do
+      @game = create :game, players_count: 0
+    end
+    context 'with an unplayed game' do
+      before(:each) do
+        players = @nicks.map do |nick|
+          create :player, nick: nick, game: @game
+        end
+        @player = players.first
+        @game.update(creator: @player)
+        get :info, {game_id: @game.uuid, player_id: @player.uuid}
+        @data = JSON.parse(response.body)
+      end
+      it 'has the correct status' do
+        expect(@data['game_status']).to eq('Waiting')
+      end
+      it 'has the correct current_player' do
+        expect(@data['current_player']).to eq('alice')
+      end
+      it 'has the correct turn_seq' do
+        expect(@data['turn_seq']).to match_array(@nicks)
+      end
+      it 'has the correct status' do
+        scores = @nicks.map{|nick| [nick, 0]}.to_h
+        expect(@data['scores']).to eq(scores)
+      end
+    end
+    context 'with an in play game' do
+      before(:each) do
+        # create the collection of players
+        players = @nicks.map do |nick|
+          create :player, nick: nick, game: @game, score: rand(0..20)
+        end
+        @scores = @game.players.pluck(:nick, :score).to_h
+        # set creator and turn
+        creator = players.first
+        @turn = rand players.size
+        @game.update(creator: creator, turn: @turn)
+        # make the call
+        get :info, {game_id: @game.uuid, player_id: creator.uuid}
+        @data = JSON.parse(response.body)
+        @game.reload
+      end
+      it 'has the correct status' do
+        expect(@data['game_status']).to eq('Waiting')
+      end
+      it 'has the correct current_player' do
+        expect(@data['current_player']).to eq(@game.current_player.nick)
+      end
+      it 'has the correct turn_seq' do
+        expect(@data['turn_seq']).to match_array(@nicks.rotate(@turn))
+      end
+      it 'has the correct status' do
+        expect(@data['scores']).to eq(@scores)
+      end
+    end
+  end
+
 end
