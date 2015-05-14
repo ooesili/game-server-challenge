@@ -51,4 +51,47 @@ RSpec.describe GameController, type: :controller do
     end
   end
 
+  describe '#join' do
+    context 'with an unstarted game' do
+      before(:each) do
+        @game = create(:game)
+      end
+      context 'without a custom nick' do
+        before(:each) do
+          get :join, {game_id: @game.uuid}
+          @data = JSON.parse(response.body)
+        end
+        it 'creates a new player who is part of the game' do
+          new_player = Player.find_by(uuid: @data['player_id'])
+          expect(new_player.game.id).to eq(@game.id)
+        end
+        it 'reports that registration is true' do
+          expect(@data['registered']).to be(true)
+        end
+      end
+      context 'with a a custom nick' do
+        it 'con join the game with a custom nick' do
+          custom_nick = 'my_nick'
+          get :join, {game_id: @game.uuid, nick: custom_nick}
+          @data = JSON.parse(response.body)
+          new_player = Player.find_by(uuid: @data['player_id'])
+          expect(new_player.nick).to eq(custom_nick)
+        end
+      end
+    end
+    context 'without an unstarted game' do
+      after(:each) do
+        get :join, {game_id: @game.uuid}
+        @data = JSON.parse(response.body)
+        expect(@data['registered']).to be(false)
+      end
+      it 'cannot join an "In Play" game' do
+        @game = create(:game, status: 'In Play')
+      end
+      it 'cannot join a "Completed" game' do
+        @game = create(:game, status: 'Completed')
+      end
+    end
+  end
+
 end

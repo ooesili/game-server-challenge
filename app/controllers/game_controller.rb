@@ -17,7 +17,7 @@ class GameController < ApplicationController
   def join
     # try to find game
     game = Game.find_by(uuid: params[:game_id])
-    if not game or game.status == 'In Play'
+    if not game or game.status != 'Waiting'
       # game not found or already started
       render status: :not_found, json: {
         registered: false,
