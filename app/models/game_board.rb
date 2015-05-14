@@ -1,4 +1,5 @@
 class GameBoard
+  attr_accessor :board
 
   def initialize(board = nil)
     @board = board

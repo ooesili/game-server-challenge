@@ -94,4 +94,47 @@ RSpec.describe GameController, type: :controller do
     end
   end
 
+  describe '#start' do
+    context 'with an unstarted game' do
+      before(:each) do
+        @game = create(:game, players_count: 2)
+        @creator = @game.creator
+        @non_creator = @game.players.last
+      end
+      context 'as a creator' do
+        before(:each) do
+          get :start, {game_id: @game.uuid, player_id: @creator.uuid}
+          @data = JSON.parse(response.body)
+        end
+        it 'indicates success' do
+          expect(@data['success']).to be(true)
+        end
+        it 'repsonds with the grid' do
+          expect(@data['grid']).to eq(fake_board)
+        end
+      end
+      context 'as a non creator' do
+        it 'indicates falure' do
+          get :start, {game_id: @game.uuid, player_id: @non_creator.uuid}
+          @data = JSON.parse(response.body)
+          expect(@data['success']).to be(false)
+        end
+      end
+    end
+    context 'without un unstarted game' do
+      after(:each) do
+        creator = @game.creator
+        get :start, {game_id: @game.uuid, player_id: creator.uuid}
+        @data = JSON.parse(response.body)
+        expect(@data['success']).to be(false)
+      end
+      it 'cannot join an "In Play" game' do
+        @game = create(:game, status: 'In Play')
+      end
+      it 'cannot join a "Completed" game' do
+        @game = create(:game, status: 'Completed')
+      end
+    end
+  end
+
 end

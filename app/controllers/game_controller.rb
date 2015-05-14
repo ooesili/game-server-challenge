@@ -68,7 +68,7 @@ class GameController < ApplicationController
       return
     end
     # see if game is already started
-    if game.status == 'In Play'
+    if game.status != 'Waiting'
       render json: {
         success: false,
         message: 'game already started',
@@ -81,7 +81,7 @@ class GameController < ApplicationController
     render json: {
       success: true,
       message: 'all good',
-      grid: game.board,
+      grid: game.board.board,
     }
   end
 
@@ -110,7 +110,7 @@ class GameController < ApplicationController
       turn_seq: players.pluck(:nick).rotate(game.turn),
       words_done: game.words_done,
       scores: players.pluck(:nick, :score).to_h,
-      grid: game.board,
+      grid: game.board.board,
     }
   end
 
