@@ -77,7 +77,13 @@ class GameBoard
 
   # other methods shouldn't care where the words came from
   ALL_WORDS = File.open '/usr/share/dict/words' do |f|
-    f.each_line.map {|word| word.chomp.upcase}
+    words = []
+    f.each_line do |word|
+      if /^[A-Za-z]+$/ =~ word
+        words.push word.chomp.upcase
+      end
+    end
+    words
   end
 
   private
@@ -143,9 +149,7 @@ class GameBoard
 
   def random_words(max_size)
     # only include normal words that are short enough
-    words = ALL_WORDS.select do |line|
-      /^[a-zA-Z]+$/ =~ line and line.length <= max_size
-    end
+    words = ALL_WORDS.select{|line| line.length <= max_size}
     words.shuffle!
   end
 
