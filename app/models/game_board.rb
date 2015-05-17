@@ -26,7 +26,7 @@ class GameBoard
           if insert_word(word)
             @inserted_words << word
             # stop if we've inserted all the words we needed to
-            throw :done if @inserted_words.size > num_words
+            throw :done if @inserted_words.size == num_words
           end
         end
         # create another empty game and start over if we didn't finish
