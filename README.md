@@ -269,4 +269,4 @@ randomly generated boards do in fact contain the 10 inserted words that the
 `fill_board` method records.
 
 
-[1]: [https://sites.google.com/a/tworoads.co.in/index/home/competitions-and-open-questions/game-server-challenge]
+[1]: https://sites.google.com/a/tworoads.co.in/index/home/competitions-and-open-questions/game-server-challenge
