@@ -165,7 +165,7 @@ output of the commands were ran through `json_pp` for legibility.
 
 #### /create
 ```bash
-curl -s 'http://localhost:3000/create' | json_pp
+$ curl -s 'http://localhost:3000/create' | json_pp
 {
    "nick" : "romagueradicki",
    "player_id" : "a0b4beff-ab65-4630-8493-e2c5dce67d77",
@@ -175,7 +175,7 @@ curl -s 'http://localhost:3000/create' | json_pp
 
 #### /join
 ```bash
-curl -s 'http://localhost:3000/join?game_id=5dd33b11-f4bb-4ccd-9f32-b5b91c53dd7c' | json_pp
+$ curl -s 'http://localhost:3000/join?game_id=5dd33b11-f4bb-4ccd-9f32-b5b91c53dd7c' | json_pp
 {
    "nick" : "kleingleichner",
    "player_id" : "3cae31dd-0bc8-446f-a2a5-c9c5b8dd26e9",
@@ -185,7 +185,7 @@ curl -s 'http://localhost:3000/join?game_id=5dd33b11-f4bb-4ccd-9f32-b5b91c53dd7c
 
 #### /start
 ```bash
-curl -s 'http://localhost:3000/start?game_id=5dd33b11-f4bb-4ccd-9f32-b5b91c53dd7c&player_id=a0b4beff-ab65-4630-8493-e2c5dce67d77' | json_pp
+$ curl -s 'http://localhost:3000/start?game_id=5dd33b11-f4bb-4ccd-9f32-b5b91c53dd7c&player_id=a0b4beff-ab65-4630-8493-e2c5dce67d77' | json_pp
 {
    "grid" : [
       "YYTOPTATIVESZVI",
@@ -211,7 +211,7 @@ curl -s 'http://localhost:3000/start?game_id=5dd33b11-f4bb-4ccd-9f32-b5b91c53dd7
 
 #### /play
 ```bash
-curl -s 'http://localhost:3000/play?game_id=5dd33b11-f4bb-4ccd-9f32-b5b91c53dd7c&player_id=a0b4beff-ab65-4630-8493-e2c5dce67d77&word=specklessness' | json_pp
+$ curl -s 'http://localhost:3000/play?game_id=5dd33b11-f4bb-4ccd-9f32-b5b91c53dd7c&player_id=a0b4beff-ab65-4630-8493-e2c5dce67d77&word=specklessness' | json_pp
 {
    "success" : true,
    "score" : 13
@@ -220,7 +220,7 @@ curl -s 'http://localhost:3000/play?game_id=5dd33b11-f4bb-4ccd-9f32-b5b91c53dd7c
 
 #### /info
 ```bash
-curl -s 'http://localhost:3000/info?game_id=5dd33b11-f4bb-4ccd-9f32-b5b91c53dd7c&player_id=3cae31dd-0bc8-446f-a2a5-c9c5b8dd26e9' | json_pp
+$ curl -s 'http://localhost:3000/info?game_id=5dd33b11-f4bb-4ccd-9f32-b5b91c53dd7c&player_id=3cae31dd-0bc8-446f-a2a5-c9c5b8dd26e9' | json_pp
 {
    "scores" : {
       "kleingleichner" : 0,
