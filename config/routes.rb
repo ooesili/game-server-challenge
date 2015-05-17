@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  root 'welcome#index'
   get '/create' => 'game#create'
   get '/join' => 'game#join'
   get '/start' => 'game#start'
