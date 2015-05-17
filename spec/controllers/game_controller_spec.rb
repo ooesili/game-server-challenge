@@ -31,6 +31,35 @@ fake_inserted_words = [
   "FOREWONTED"
 ]
 
+
+RSpec.shared_examples '#play failure' do
+  before(:each) do
+    @game = create :game, players_count: 2
+    @player = @game.current_player
+    get :play, {word: @word, game_id: @game.uuid, player_id: @player.uuid}
+    @data = JSON.parse(response.body)
+  end
+  it 'indicates failure' do
+    expect(@data['success']).to be(false)
+  end
+  it 'reports 0 for the score' do
+    expect(@data['score']).to be(0)
+  end
+  it 'does not update the players score' do
+    @player.reload
+    expect(@player.score).to eq(0)
+  end
+  it 'does not move to the next player\'s turn' do
+    @game.reload
+    expect(@game.current_player.id).to eq(@player.id)
+  end
+  it 'does not marks the word as found' do
+    @game.reload
+    expect(@game.words_done).not_to include(@word)
+  end
+end
+
+
 RSpec.describe GameController, type: :controller do
 
   before(:each) do
@@ -191,34 +220,17 @@ RSpec.describe GameController, type: :controller do
         expect(@game.words_done).to include(@word)
       end
     end
-    context 'with an invalid word' do
+    context 'with a word that is not on the board' do
       before(:all) do
         @word = 'introspection'
       end
-      before(:each) do
-        @game = create :game, players_count: 2
-        @player = @game.current_player
-        get :play, {word: @word, game_id: @game.uuid, player_id: @player.uuid}
-        @data = JSON.parse(response.body)
+      it_behaves_like '#play failure'
+    end
+    context 'with a non-word that is on the board' do
+      before(:all) do
+        @word = 'IEXROADUZIO'
       end
-      it 'indicates failure' do
-        expect(@data['success']).to be(false)
-      end
-      it 'reports 0 for the score' do
-        expect(@data['score']).to be(0)
-      end
-      it 'does not update the players score' do
-        @player.reload
-        expect(@player.score).to eq(0)
-      end
-      it 'does not move to the next player\'s turn' do
-        @game.reload
-        expect(@game.current_player.id).to eq(@player.id)
-      end
-      it 'does not marks the word as found' do
-        @game.reload
-        expect(@game.words_done).not_to include(@word)
-      end
+      it_behaves_like '#play failure'
     end
     context 'when playing the last word' do
       before(:each) do

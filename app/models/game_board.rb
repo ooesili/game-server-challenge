@@ -43,12 +43,13 @@ class GameBoard
   end
 
   def find_word(word)
+    # the game board is all uppercase
+    word = word.upcase
+    return false if not ALL_WORDS.include? word
     # calculate the word size once
     word_size = word.size
     # try the word in reverse too
     [word, word.reverse].any? do |this_word|
-      # the game board is all uppercase
-      this_word.upcase!
       # try every direction
       4.times.any? do |direction|
         # get coordinate ranges to iterate over
