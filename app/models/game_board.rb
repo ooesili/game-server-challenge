@@ -84,7 +84,7 @@ class GameBoard
   end
 
   # other methods shouldn't care where the words came from
-  ALL_WORDS = File.open '/usr/share/dict/words' do |f|
+  ALL_WORDS = File.open "#{Rails.root}/lib/assets/words.txt" do |f|
     words = []
     f.each_line do |word|
       if /^[A-Za-z]+$/ =~ word
