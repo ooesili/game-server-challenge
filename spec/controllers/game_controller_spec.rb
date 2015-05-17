@@ -1,28 +1,44 @@
 require 'rails_helper'
 
 fake_board = [
-  'ZURQIXJCDTTSOSG',
-  'UNYQMTETAILOFIB',
-  'GFENTYSOTCQRSSO',
-  'RRXOONIUUODHIUB',
-  'EUMIOSOANCEESOI',
-  'WCPTMMMBNRISONA',
-  'OTEAKRRICHFINOY',
-  'RUGZXAEYRXOSITB',
-  'GOSIMHVCACROPOM',
-  'EUMHXEOSRVMTYMB',
-  'LSYCHRWNSDIIHOU',
-  'PVZEAPDQHDTMJHD',
-  'PMETTSNWIUYUFNK',
-  'AEKAQJWXPOXEIUG',
-  'BWACRAODUROFTJW',
+  "SVQNAWRLSCZTVGQ",
+  "UJRGVAQAHWQTUSN",
+  "DFXOEMTVVBHTIQO",
+  "EJOOVNOJMLCRXPI",
+  "IEXROADUZIORAMT",
+  "NRSHESSVTTMRPRA",
+  "BYCAMWXTIHAKUDL",
+  "BTCVLFOBUMRTJQU",
+  "FZKZOCINEOCOTVM",
+  "FYQOPHOTTETAOYM",
+  "UXTAOVRNMEWMKTU",
+  "AESCSISUIBDDNSN",
+  "RJAGTIHKELKTRVX",
+  "FPGINTKBMFCXOJP",
+  "QCSGBPNAHARAVOA"
 ].map(&:chars)
+
+fake_inserted_words = [
+  "CLINOCLASE",
+  "NUMMULATION",
+  "PARAMETRITIS",
+  "OUTSAVOR",
+  "FOOTER",
+  "HUMECT",
+  "COHIBITOR",
+  "VARAHAN",
+  "MOUTHROOT",
+  "FOREWONTED"
+]
 
 RSpec.describe GameController, type: :controller do
 
   before(:each) do
     # create a predictable board
-    game_board = GameBoard.new fake_board
+    game_board = GameBoard.new(
+      board: fake_board,
+      inserted_words: fake_inserted_words
+    )
     # ignore fill_board calls
     allow(game_board).to receive('fill_board')
     # inject the created game_board
@@ -140,7 +156,7 @@ RSpec.describe GameController, type: :controller do
   describe '#play' do
     context 'with a valid word' do
       before(:all) do
-        @word = 'crimson'
+        @word = fake_inserted_words.sample
       end
       before(:each) do
         # start on the last turn so that we can test the wrap around, as this
@@ -177,7 +193,7 @@ RSpec.describe GameController, type: :controller do
     end
     context 'with an invalid word' do
       before(:all) do
-        @word = 'sanguine'
+        @word = 'introspection'
       end
       before(:each) do
         @game = create :game, players_count: 2

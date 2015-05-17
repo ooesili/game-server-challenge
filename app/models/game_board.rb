@@ -1,10 +1,11 @@
 class GameBoard
   attr_accessor :board, :inserted_words
 
-  def initialize(board = nil)
-    @board = board
+  def initialize(data = {})
+    @board = data[:board]
+    @inserted_words = data[:inserted_words]
     # set game_size if we were given a board
-    @game_size = board.size if board
+    @game_size = board.size if @board
   end
 
   def fill_board(game_size, num_words)
@@ -68,11 +69,18 @@ class GameBoard
 
   # for serializetion
   def self.dump(game_board)
-    game_board.instance_variable_get(:@board)
+    {
+      board: game_board.board,
+      inserted_words: game_board.inserted_words,
+    }
   end
 
-  def self.load(board)
-    new(board)
+  def self.load(data)
+    if data
+      new(data)
+    else
+      new
+    end
   end
 
   # other methods shouldn't care where the words came from
