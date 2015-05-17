@@ -50,7 +50,11 @@ class Game < ActiveRecord::Base
   end
 
   def next_turn
-    self.update(turn: (turn + 1) % self.players.size)
+    if (self.board.inserted_words - words_done).empty?
+      self.update(status: 'Completed')
+    else
+      self.update(turn: (turn + 1) % self.players.size)
+    end
   end
 
 end

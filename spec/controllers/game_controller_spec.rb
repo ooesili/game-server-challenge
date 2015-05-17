@@ -220,6 +220,29 @@ RSpec.describe GameController, type: :controller do
         expect(@game.words_done).not_to include(@word)
       end
     end
+    context 'when playing the last word' do
+      before(:each) do
+        @last_index = rand(fake_inserted_words.size)
+        @game = create :game,
+          players_count: 2,
+          words_done: fake_inserted_words.rotate(@last_index).drop(1),
+          status: 'In Play'
+        @word = fake_inserted_words[@last_index]
+        get :play, {
+          word: @word,
+          game_id: @game.uuid,
+          player_id: @game.current_player.uuid
+        }
+        @data = JSON.parse(response.body)
+      end
+      it 'gets a correct score' do
+        expect(@data['score']).to eq(@word.size)
+      end
+      it 'marks the game as completed' do
+        @game.reload
+        expect(@game.status).to eq('Completed')
+      end
+    end
   end
 
   describe '#info' do
