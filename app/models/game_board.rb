@@ -1,9 +1,9 @@
 class GameBoard
   attr_accessor :board, :inserted_words
 
-  def initialize(data = {})
-    @board = data[:board]
-    @inserted_words = data[:inserted_words]
+  def initialize(board = nil, inserted_words = nil)
+    @board = board
+    @inserted_words = inserted_words
     # set game_size if we were given a board
     @game_size = board.size if @board
   end

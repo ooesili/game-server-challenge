@@ -64,10 +64,7 @@ RSpec.describe GameController, type: :controller do
 
   before(:each) do
     # create a predictable board
-    game_board = GameBoard.new(
-      board: fake_board,
-      inserted_words: fake_inserted_words
-    )
+    game_board = GameBoard.new fake_board, fake_inserted_words
     # ignore fill_board calls
     allow(game_board).to receive('fill_board')
     # inject the created game_board

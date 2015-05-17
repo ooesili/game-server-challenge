@@ -11,7 +11,7 @@ class Game < ActiveRecord::Base
 
   def play!(word)
     # make sure the word hasn't already been found
-    game_board = GameBoard.new(self.board)
+    game_board = GameBoard.new(self.board, self.inserted_words)
     if not words_done.include? word and game_board.find_word word
       word_size = word.size
       # record word as found
@@ -21,7 +21,7 @@ class Game < ActiveRecord::Base
       player.score += word_size
       player.save!
       # finish the turn
-      next_turn(game_board)
+      next_turn
       word_size
     else
       0
@@ -35,6 +35,7 @@ class Game < ActiveRecord::Base
     # create game
     game = new
     game.board = game_board.board
+    game.inserted_words = game_board.inserted_words
     game.uuid = SecureRandom.uuid
     game
   end
@@ -46,8 +47,8 @@ class Game < ActiveRecord::Base
     self.save!
   end
 
-  def next_turn(game_board)
-    if (game_board.inserted_words - words_done).empty?
+  def next_turn
+    if (self.inserted_words - words_done).empty?
       self.update(status: 'Completed')
     else
       self.update(turn: (turn + 1) % self.players.size)
