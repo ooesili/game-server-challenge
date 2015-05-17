@@ -68,22 +68,6 @@ class GameBoard
     end
   end
 
-  # for serializetion
-  def self.dump(game_board)
-    {
-      board: game_board.board,
-      inserted_words: game_board.inserted_words,
-    }
-  end
-
-  def self.load(data)
-    if data
-      new(data)
-    else
-      new
-    end
-  end
-
   # other methods shouldn't care where the words came from
   ALL_WORDS = File.open "#{Rails.root}/lib/assets/words.txt" do |f|
     words = []

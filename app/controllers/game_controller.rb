@@ -81,7 +81,7 @@ class GameController < ApplicationController
     render json: {
       success: true,
       message: 'all good',
-      grid: game.board.board,
+      grid: game.board,
     }
   end
 
@@ -110,7 +110,7 @@ class GameController < ApplicationController
       turn_seq: players.pluck(:nick).rotate(game.turn),
       words_done: game.words_done,
       scores: players.pluck(:nick, :score).to_h,
-      grid: game.board.board,
+      grid: game.board,
     }
   end
 

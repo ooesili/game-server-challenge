@@ -4,7 +4,6 @@ class Game < ActiveRecord::Base
   before_destroy :remove_creator
   has_many :players, dependent: :destroy
   enum status: ['Waiting', 'In Play', 'Completed']
-  serialize :board, GameBoard
 
   def current_player
     self.players.order(:id)[self.turn]
@@ -12,7 +11,8 @@ class Game < ActiveRecord::Base
 
   def play!(word)
     # make sure the word hasn't already been found
-    if not words_done.include? word and board.find_word word
+    game_board = GameBoard.new(self.board)
+    if not words_done.include? word and game_board.find_word word
       word_size = word.size
       # record word as found
       words_done.push word
@@ -21,7 +21,7 @@ class Game < ActiveRecord::Base
       player.score += word_size
       player.save!
       # finish the turn
-      next_turn
+      next_turn(game_board)
       word_size
     else
       0
@@ -29,8 +29,12 @@ class Game < ActiveRecord::Base
   end
 
   def self.build(size = 15, num_words = 10)
+    # create board
+    game_board = GameBoard.new
+    game_board.fill_board(size, num_words)
+    # create game
     game = new
-    game.board.fill_board(size, num_words)
+    game.board = game_board.board
     game.uuid = SecureRandom.uuid
     game
   end
@@ -42,8 +46,8 @@ class Game < ActiveRecord::Base
     self.save!
   end
 
-  def next_turn
-    if (self.board.inserted_words - words_done).empty?
+  def next_turn(game_board)
+    if (game_board.inserted_words - words_done).empty?
       self.update(status: 'Completed')
     else
       self.update(turn: (turn + 1) % self.players.size)
