@@ -12,17 +12,18 @@ Dir.chdir APP_ROOT do
   system "gem install bundler --conservative"
   system "bundle check || bundle install"
 
-  # puts "\n== Copying sample files =="
-  # unless File.exist?("config/database.yml")
-  #   system "cp config/database.yml.sample config/database.yml"
-  # end
-
   puts "\n== Preparing database =="
   system "bin/rake db:setup"
 
   puts "\n== Removing old logs and tempfiles =="
   system "rm -f log/*"
   system "rm -rf tmp/cache"
+
+  remotes = `git remote show`.each_line.to_a.map(&:chomp)
+  puts "\n== Adding git remotes =="
+  unless remotes.include? 'heroku'
+    system 'git remote add heroku git@heroku.com:game-server-challenge.git'
+  end
 
   puts "\n== Restarting application server =="
   system "touch tmp/restart.txt"
