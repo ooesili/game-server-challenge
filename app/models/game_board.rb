@@ -34,11 +34,9 @@ class GameBoard
         @board = empty_game
       end
     end
-    # replace nils with random characters
+    # replace spaces with random characters
     @board.map! do |row|
-      row.map! do |char|
-        char or (65 + rand(26)).chr
-      end
+      row.gsub(' ') {(65 + rand(26)).chr}
     end
   end
 
@@ -127,7 +125,7 @@ class GameBoard
     # see if we can insert the word without changing anything
     ok_to_insert = word.each_char.with_index.all? do |char, i|
       y, x = self.send(accessor, ystart, xstart, i)
-      [char,nil].include? @board[y][x]
+      [char, ' '].include? @board[y][x]
     end
     # add the word if it's ok
     if ok_to_insert
@@ -148,7 +146,7 @@ class GameBoard
 
   # create a new empty game board
   def empty_game
-    Array.new(@game_size) {Array.new(@game_size, nil)}
+    Array.new(@game_size) {' ' * 15}
   end
 
 end

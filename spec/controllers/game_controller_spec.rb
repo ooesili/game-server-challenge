@@ -16,7 +16,7 @@ fake_board = [
   "RJAGTIHKELKTRVX",
   "FPGINTKBMFCXOJP",
   "QCSGBPNAHARAVOA"
-].map(&:chars)
+]
 
 fake_inserted_words = [
   "CLINOCLASE",
