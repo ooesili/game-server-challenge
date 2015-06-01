@@ -2,7 +2,7 @@ Game Server Challenge [![Build Status](https://travis-ci.org/ooesili/game-server
 ======================
 
 This application is up and running on
-https://game-server-challenge.herouapp.com
+https://game-server-challenge.herokuapp.com
 
 
 Introduction
